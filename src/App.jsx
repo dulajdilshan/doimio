@@ -19,7 +19,7 @@ const Card = (props) => {
 const CardList = (props) => {
   return(
     <div>
-      {props.cards.map(card => <Card {...card} />)}
+      {props.cards.map(card => <Card key={card.id} {...card}/>)}
     </div>
   );
 }
@@ -31,15 +31,16 @@ class Form extends React.Component{
 
   handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Event: Form Submit', this.state.userName);
-    axios.get('https://api.github.com/users/${this.state.userName}')
+    
+    axios.get(`https://api.github.com/users/${this.state.userName}`)
       .then(resp => {
-        console.log(resp);
+        this.props._onSubmit(resp.data);
+        this.setState({userName:''});
       });
   }
   render(){
     return(
-      <form accept-charset="UTF-8" onSubmit={this.handleSubmit}>
+      <form acceptCharset="UTF-8" onSubmit={this.handleSubmit}>
         <div className="form-group">
           <input 
           value={this.state.userName}
@@ -54,28 +55,18 @@ class Form extends React.Component{
   }
 }
 
-let data = [
-  {
-    avatar_url : "https://avatars0.githubusercontent.com/u/25485997?v=4",
-    name : "Dulaj Dilshan",
-    company : "Sysco LABS"
-  },
-  {
-    avatar_url : "https://avatars3.githubusercontent.com/u/25484917?v=4",
-    name : "Dasun Pubudumal",
-    company : "Direct FN"
-  },
-  {
-    avatar_url : "https://avatars0.githubusercontent.com/u/23340269?v=4",
-    name : "Anju Cheran",
-    company : "Arimac Lanka"
-  }
-];
 
 class App extends Component {
 
   state = {
-    cards: data
+    cards: []
+  }
+
+  addDataToState = (cardInfo) => {
+    // const newData = {avatar_url:cardInfo.avatar_url, name:cardInfo.name, company:cardInfo.company};
+    const newCards = this.state.cards;
+    newCards.push(cardInfo);
+    this.setState({cards:newCards});
   }
 
   render() {
@@ -87,7 +78,7 @@ class App extends Component {
               <h3 className="panel-title">Find GitHub Card</h3>
             </div>
             <div className="panel-body">
-              <Form />
+              <Form _onSubmit={this.addDataToState}/>
               <CardList cards={this.state.cards}/>
             </div>
           </div>
