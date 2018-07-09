@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import axios from 'axios';
 import './App.css';
 
 
@@ -30,7 +31,11 @@ class Form extends React.Component{
 
   handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Event: Form Submit', this.value);
+    console.log('Event: Form Submit', this.state.userName);
+    axios.get('https://api.github.com/users/${this.state.userName}')
+      .then(resp => {
+        console.log(resp);
+      });
   }
   render(){
     return(
@@ -39,8 +44,7 @@ class Form extends React.Component{
           <input 
           value={this.state.userName}
           onChange={(e) => {
-            this.setState({userName:e.target.value});
-            console.log(this.state.userName);
+              this.setState({userName:e.target.value});
             }}
           className="form-control" placeholder="Enter GitHub username" type="text" required/>
         </div>
